@@ -1,0 +1,50 @@
+import csv
+
+def assign_grade(marks):
+  """Assigns a grade based on the provided marks."""
+  if marks >= 90:
+    return 'A'
+  elif marks >= 80:
+    return 'B'
+  elif marks >= 70:
+    return 'C'
+  elif marks >= 60:
+    return 'D'
+  else:
+    return 'F'
+
+def process_data(input_file, output_file):
+  """Processes student marks, assigns grades, calculates mean, and generates CSV transcript."""
+  students = []
+  total_marks = 0
+  total_grades = 0
+
+  with open(input_file, 'r') as csvfile:
+    reader = csv.DictReader(csvfile)
+    for row in reader:
+      student_id = row['student_id']
+      name = row['name']
+      marks = float(row['marks'])
+      grade = assign_grade(marks)
+
+      students.append({'student_id': student_id, 'name': name, 'marks': marks, 'grade': grade})
+      total_marks += marks
+      total_grades += ord(grade)  # Convert grades to numerical values for mean calculation
+
+  mean_marks = total_marks / len(students)
+  mean_grade = chr(total_grades / len(students))  # Convert mean grade back to character
+
+  with open(output_file, 'w', newline='') as csvfile:
+    fieldnames = ['student_id', 'name', 'marks', 'grade']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    for student in students:
+      writer.writerow(student)
+
+    writer.writerow({'student_id': 'Mean', 'name': '', 'marks': mean_marks, 'grade': mean_grade})
+
+if __name__ == "__main__":
+  input_file = 'student_marks.csv' 
+  output_file = 'student_transcript.csv'  
+  process_data(input_file, output_file)
+
